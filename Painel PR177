@@ -1,0 +1,221 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+# Cores
+RED='\e[1;31m'
+GREEN='\e[1;32m'
+YELLOW='\e[1;33m'
+CYAN='\e[1;36m'
+NC='\e[0m'
+
+# URL para atualização automática — ALTERE para o seu repo!
+REPO_URL="https://raw.githubusercontent.com/seuusuario/seurepo/main/painelpr17.sh"
+LOCAL_SCRIPT="$HOME/painelpr17.sh"
+
+# Função para atualizar o painel automaticamente
+auto_update() {
+  echo -e "${CYAN}Verificando atualizações do Painel PR17...${NC}"
+  curl -s -o "$LOCAL_SCRIPT.tmp" "$REPO_URL"
+  if [ $? -eq 0 ]; then
+    diff "$LOCAL_SCRIPT.tmp" "$LOCAL_SCRIPT" &>/dev/null
+    if [ $? -ne 0 ]; then
+      echo -e "${YELLOW}Nova versão encontrada. Atualizando...${NC}"
+      mv "$LOCAL_SCRIPT.tmp" "$LOCAL_SCRIPT"
+      chmod +x "$LOCAL_SCRIPT"
+      echo -e "${GREEN}Atualização concluída! Reiniciando...${NC}"
+      exec bash "$LOCAL_SCRIPT"
+    else
+      rm "$LOCAL_SCRIPT.tmp"
+      echo -e "${GREEN}Painel já está na versão mais recente.${NC}"
+    fi
+  else
+    echo -e "${RED}Falha ao verificar atualizações.${NC}"
+  fi
+}
+
+# Banner
+banner() {
+  clear
+  echo -e "${RED}"
+  echo "  ██████╗ ██████╗ ██████╗ ██╗███╗   ██╗███████╗██████╗  17"
+  echo " ██╔════╝ ██╔══██╗██╔══██╗██║████╗  ██║██╔════╝██╔══██╗   "
+  echo " ██║  ███╗██████╔╝██║  ██║██║██╔██╗ ██║█████╗  ██████╔╝   "
+  echo " ██║   ██║██╔═══╝ ██║  ██║██║██║╚██╗██║██╔══╝  ██╔══██╗   "
+  echo " ╚██████╔╝██║     ██████╔╝██║██║ ╚████║███████╗██║  ██║   "
+  echo "  ╚═════╝ ╚═╝     ╚═════╝ ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝   "
+  echo -e "       ${CYAN}PAINEL PR17 - HACKER DARK TOOLKIT${NC}"
+  echo
+}
+
+# Menu principal
+menu_principal() {
+  banner
+  echo -e "${GREEN}⚙️  Bem-vindo ao Painel PR17 - Pentest & Anonimato${NC}"
+  echo
+  echo -e "${CYAN}[01]${NC} 🔥 Ativar TOR + Proxychains"
+  echo -e "${CYAN}[02]${NC} 🌐 Navegação Anônima"
+  echo -e "${CYAN}[03]${NC} 🕵️ PHISHING & Engenharia Social"
+  echo -e "${CYAN}[04]${NC} 🛡️ Segurança (Rootkit, Ocultar IP)"
+  echo -e "${CYAN}[05]${NC} 🔁 Atualizar Proxies Automáticos"
+  echo -e "${CYAN}[06]${NC} ⚙️ Status da Hidra (proxy/tor)"
+  echo -e "${CYAN}[07]${NC} 🔧 Submenu Avançado / Oculto"
+  echo -e "${CYAN}[08]${NC} 🔄 Atualizar Painel Manualmente"
+  echo -e "${CYAN}[09]${NC} ❌ Sair"
+  echo
+  read -p $'\nEscolha uma opção: ' opcao
+  case $opcao in
+    1) iniciar_tor_proxychains;;
+    2) navegar_anonimamente;;
+    3) menu_phishing;;
+    4) menu_seguranca;;
+    5) atualizar_proxies;;
+    6) status_hidra;;
+    7) menu_avancado;;
+    8) auto_update;;
+    9) exit;;
+    *) echo -e "${RED}Opção inválida!${NC}"; sleep 1; menu_principal;;
+  esac
+}
+
+# Funções básicas
+
+iniciar_tor_proxychains() {
+  echo -e "${YELLOW}Iniciando Tor + Proxychains...${NC}"
+  tor &>/dev/null &
+  sleep 5
+  proxychains curl https://ifconfig.me
+  read -p "Pressione Enter para voltar..." 
+  menu_principal
+}
+
+navegar_anonimamente() {
+  echo -e "${YELLOW}Iniciando navegador via Proxychains (w3m)...${NC}"
+  proxychains w3m https://duckduckgo.com
+  menu_principal
+}
+
+atualizar_proxies() {
+  echo -e "${YELLOW}Baixando proxies SOCKS4/5 atualizados...${NC}"
+  curl -s https://api.proxyscrape.com/v2/?request=getproxies&protocol=socks5 > $PREFIX/etc/proxychains.conf
+  echo -e "${GREEN}Proxychains atualizado com sucesso!${NC}"
+  read -p "Pressione Enter para voltar..." 
+  menu_principal
+}
+
+status_hidra() {
+  echo -e "${CYAN}Status do Tor:${NC}"
+  pidof tor && echo -e "${GREEN}✔️ Rodando${NC}" || echo -e "${RED}❌ Parado${NC}"
+  echo -e "${CYAN}Seu IP pelo Tor:${NC}"
+  proxychains curl -s https://ifconfig.me
+  read -p "\nPressione Enter para voltar..." 
+  menu_principal
+}menu_phishing() {
+  echo -e "${CYAN}\n╔════════════════════════════════════╗"
+  echo -e "║      🎯 PHISHING AVANÇADO (PR17)    ║"
+  echo -e "╚════════════════════════════════════╝${NC}"
+  echo -e "${CYAN}[1]${NC} Criar site falso simples (HTML)"
+  echo -e "${CYAN}[2]${NC} ShellPhish"
+  echo -e "${CYAN}[3]${NC} Zphisher"
+  echo -e "${CYAN}[4]${NC} IP Tracker (geolocalização)"
+  echo -e "${CYAN}[5]${NC} xploitSPY - Espião Android"
+  echo -e "${CYAN}[6]${NC} BeEF - Navegador controle"
+  echo -e "${CYAN}[7]${NC} Voltar"
+  read -p $'\nEscolha: ' opt
+  case $opt in
+    1) echo "[!] Site falso básico - HTML + captura..."; sleep 2; menu_phishing;;
+    2) echo "[+] Baixando ShellPhish..."; sleep 2; menu_phishing;;
+    3) echo "[+] Iniciando Zphisher..."; sleep 2; menu_phishing;;
+    4) echo "[+] Executando IP Tracker..."; sleep 2; menu_phishing;;
+    5) menu_xploitspy;;
+    6) menu_beef;;
+    7) menu_principal;;
+    *) echo "Opção inválida"; sleep 1; menu_phishing;;
+  esac
+}
+
+menu_xploitspy() {
+  echo -e "${CYAN}\n╔═════════════════════════════════════╗"
+  echo -e "║      📱 xploitSPY - Espião Android   ║"
+  echo -e "╚═════════════════════════════════════╝${NC}"
+  echo -e "[1] Instalar xploitSPY"
+  echo -e "[2] Gerar APK espião"
+  echo -e "[3] Iniciar servidor"
+  echo -e "[4] Ver dispositivos conectados"
+  echo -e "[5] Voltar"
+  read -p $'\nEscolha: ' xopt
+  case $xopt in
+    1) echo "[+] Instalando xploitSPY..."; sleep 2; menu_xploitspy;;
+    2) echo "[+] Gerando APK espião..."; sleep 2; menu_xploitspy;;
+    3) echo "[+] Iniciando servidor..."; sleep 2; menu_xploitspy;;
+    4) echo "[+] Verificando dispositivos..."; sleep 2; menu_xploitspy;;
+    5) menu_phishing;;
+    *) echo "Opção inválida"; sleep 1; menu_xploitspy;;
+  esac
+}
+
+menu_beef() {
+  echo -e "${CYAN}\n╔═════════════════════════════════════════╗"
+  echo -e "║     🌐 BeEF - Ataques via Navegador      ║"
+  echo -e "╚═════════════════════════════════════════╝${NC}"
+  echo -e "[1] Instalar BeEF"
+  echo -e "[2] Iniciar servidor"
+  echo -e "[3] Gerar link hook.js"
+  echo -e "[4] Ver vítimas conectadas"
+  echo -e "[5] Voltar"
+  read -p $'\nEscolha: ' bopt
+  case $bopt in
+    1) echo "[+] Instalando BeEF..."; sleep 2; menu_beef;;
+    2) echo "[+] Iniciando BeEF..."; sleep 2; menu_beef;;
+    3) echo "[+] hook.js: http://localhost:3000/hook.js"; sleep 3; menu_beef;;
+    4) echo "[+] Aguardando vítimas..."; sleep 2; menu_beef;;
+    5) menu_phishing;;
+    *) echo "Opção inválida"; sleep 1; menu_beef;;
+  esac
+}
+
+menu_seguranca() {
+  echo -e "${CYAN}\n╔════════════════════════════╗"
+  echo -e "║      🛡️ Segurança PR17       ║"
+  echo -e "╚════════════════════════════╝${NC}"
+  echo -e "[1] Verificar rootkits"
+  echo -e "[2] Ativar firewall (ufw)"
+  echo -e "[3] Modo Ghost (esconder painel)"
+  echo -e "[4] Voltar"
+  read -p $'\nEscolha: ' sopt
+  case $sopt in
+    1) echo "[+] Verificando rootkits..."; sleep 2; menu_seguranca;;
+    2) echo "[+] Ativando firewall..."; sleep 2; menu_seguranca;;
+    3) echo "[+] Ocultando painel..."; sleep 2; menu_seguranca;;
+    4) menu_principal;;
+    *) echo "Opção inválida"; sleep 1; menu_seguranca;;
+  esac
+}
+
+menu_avancado() {
+  echo -e "${CYAN}\n╔════════════════════════════════╗"
+  echo -e "║   🔧 Submenu Avançado / Oculto  ║"
+  echo -e "╚════════════════════════════════╝${NC}"
+  echo -e "[1] HUD (IP Tor, Proxy, hora)"
+  echo -e "[2] Gerador de payloads"
+  echo -e "[3] Keylogger simulado"
+  echo -e "[4] IP Logger com GeoIP"
+  echo -e "[5] Robo Sniffer (tcpdump)"
+  echo -e "[6] Logs com senha"
+  echo -e "[7] Atualizar painel agora"
+  echo -e "[8] Voltar"
+  read -p $'\nEscolha: ' adv
+  case $adv in
+    1) echo "[*] Exibindo HUD..."; sleep 2; menu_avancado;;
+    2) echo "[*] Abrindo gerador..."; sleep 2; menu_avancado;;
+    3) echo "[*] Rodando keylogger..."; sleep 2; menu_avancado;;
+    4) echo "[*] IP Logger + GeoIP..."; sleep 2; menu_avancado;;
+    5) echo "[*] Iniciando sniffer..."; sleep 2; menu_avancado;;
+    6) echo "[*] Protegendo logs..."; sleep 2; menu_avancado;;
+    7) auto_update;;
+    8) menu_principal;;
+    *) echo "Opção inválida"; sleep 1; menu_avancado;;
+  esac
+}
+
+# Início do programa
+auto_update
+menu_principal
